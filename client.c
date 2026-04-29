@@ -25,14 +25,21 @@ void send_char(int pid, char c)
 int main(int argc, char **argv)
 {
 	int pid;
+	int i;
 
-	if (argc != 2)
+	i = 0;
+	if (argc != 3)
 	{
-		ft_putstr_fd("Error argc is not 2", 1);
+		ft_putstr_fd("Error argc is not 3", 1);
 		return(1);
 	}
 
 	pid = ft_atoi(argv[1]);
 
-	send_char(pid, 'A');
+	while(argv[2][i])
+	{		
+		send_char(pid, argv[2][i]);
+		i++;
+	}
+	return(0);
 }
