@@ -1,12 +1,25 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   server.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zdudas <zdudas@student.42vienna.com>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/04/27 22:48:30 by zdudas            #+#    #+#             */
+/*   Updated: 2026/04/27 22:49:20 by zdudas           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <unistd.h>
 #include "libft/libft.h"
-#include "signal.h"
+#include <signal.h>
 
-void signal_handler(int signal)
+void	signal_handler(int signal, siginfo_t *info, void *context)
 {
-	static char c;
-	static int bit_count;
+	static char	c;
+	static int	bit_count;
 
+	(void)context;
 	if (signal == SIGUSR1)
 		c <<= 1;
 	else if (signal == SIGUSR2)
@@ -15,22 +28,30 @@ void signal_handler(int signal)
 		c |= 1;
 	}
 	bit_count++;
-	if(bit_count == 8)
+	if (bit_count == 8)
 	{
-		write(1, &c, 1);
+		if (c == '\0')
+			write(1, "\n", 1);
+		else
+			write(1, &c, 1);
 		bit_count = 0;
 		c = 0;
 	}
+	kill(info->si_pid, SIGUSR1);
 }
 
-
-int main(void)
+int	main(void)
 {
+	struct sigaction	sa;
+
 	ft_putstr_fd("Server ID: ", 1);
 	ft_putnbr_fd(getpid(), 1);
 	ft_putchar_fd('\n', 1);
-	signal(SIGUSR1, signal_handler);
-	signal(SIGUSR2, signal_handler);
-	while(1)
+	sa.sa_sigaction = signal_handler;
+	sa.sa_flags = SA_SIGINFO;
+	sigemptyset(&sa.sa_mask);
+	sigaction(SIGUSR1, &sa, NULL);
+	sigaction(SIGUSR2, &sa, NULL);
+	while (1)
 		pause();
 }
