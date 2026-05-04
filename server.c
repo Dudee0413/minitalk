@@ -14,28 +14,45 @@
 #include "libft/libft.h"
 #include <signal.h>
 
+static void	reset_message(char *c, int *bit_count)
+{
+	*c = 0;
+	*bit_count = 0;
+}
+
+static void	process_bit(int signal, char *c, int *bit_count)
+{
+	*c <<= 1;
+	if (signal == SIGUSR2)
+		*c |= 1;
+	(*bit_count)++;
+}
+
 void	signal_handler(int signal, siginfo_t *info, void *context)
 {
 	static char	c;
 	static int	bit_count;
+	static int	current_pid;
 
 	(void)context;
-	if (signal == SIGUSR1)
-		c <<= 1;
-	else if (signal == SIGUSR2)
+	if (current_pid == 0)
+		current_pid = info->si_pid;
+	if (info->si_pid != current_pid)
 	{
-		c <<= 1;
-		c |= 1;
+		kill(info->si_pid, SIGUSR2);
+		return ;
 	}
-	bit_count++;
+	process_bit(signal, &c, &bit_count);
 	if (bit_count == 8)
 	{
 		if (c == '\0')
+		{
 			write(1, "\n", 1);
+			current_pid = 0;
+		}
 		else
 			write(1, &c, 1);
-		bit_count = 0;
-		c = 0;
+		reset_message(&c, &bit_count);
 	}
 	kill(info->si_pid, SIGUSR1);
 }

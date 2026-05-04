@@ -13,13 +13,16 @@
 #include <unistd.h>
 #include "libft/libft.h"
 #include <signal.h>
+#include <stdlib.h>
 
 static volatile sig_atomic_t	g_ack = 0;
 
 void	ack_handler(int sig)
 {
-	(void)sig;
-	g_ack = 1;
+	if (sig == SIGUSR1)
+		g_ack = 1;
+	else if (sig == SIGUSR2)
+		g_ack = -1;
 }
 
 void	send_char(int pid, char c)
@@ -38,6 +41,8 @@ void	send_char(int pid, char c)
 			kill(pid, SIGUSR2);
 		while (!g_ack)
 			usleep(100);
+		if (g_ack == -1)
+			exit(1);
 		i--;
 	}
 }
@@ -48,6 +53,7 @@ int	main(int argc, char **argv)
 	int	i;
 
 	signal(SIGUSR1, ack_handler);
+	signal(SIGUSR2, ack_handler);
 	i = 0;
 	if (argc != 3)
 	{
