@@ -6,7 +6,7 @@
 /*   By: zdudas <zdudas@student.42vienna.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/27 22:49:25 by zdudas            #+#    #+#             */
-/*   Updated: 2026/04/27 22:49:27 by zdudas           ###   ########.fr       */
+/*   Updated: 2026/05/08 22:04:12 by zdudas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	send_char(int pid, char c)
 		else
 			kill(pid, SIGUSR2);
 		while (!g_ack)
-			usleep(100);
+			pause();
 		if (g_ack == -1)
 			exit(1);
 		i--;
@@ -57,7 +57,7 @@ int	main(int argc, char **argv)
 	i = 0;
 	if (argc != 3)
 	{
-		ft_putstr_fd("Error argc is not 3", 1);
+		ft_putstr_fd("Error: argc is not 3", 1);
 		return (1);
 	}
 	pid = ft_atoi(argv[1]);
