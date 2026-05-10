@@ -81,5 +81,3 @@ AI (Claude) was used during this project for the following tasks:
 - Clarifying how `sigaction` and `SA_SIGINFO` work compared to basic `signal()`
 - Understanding signal queuing limitations on Linux and why acknowledgement is necessary
 - Reviewing edge cases in the bit-shifting logic
-
-All AI-generated content was reviewed, tested, and understood before being included in the project.
